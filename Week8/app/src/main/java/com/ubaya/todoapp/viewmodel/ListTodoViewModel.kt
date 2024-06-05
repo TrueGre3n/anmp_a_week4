@@ -42,5 +42,13 @@ class ListTodoViewModel(application: Application): AndroidViewModel(application)
         }
     }
 
+    fun statDone(todo:Todo){
+        launch {
+            val db = buildDb(getApplication())
+            db.todoDao().setStatus(todo.uuid)
+            todoLD.postValue(db.todoDao().selectAllTodo())
+        }
+    }
+
 
 }

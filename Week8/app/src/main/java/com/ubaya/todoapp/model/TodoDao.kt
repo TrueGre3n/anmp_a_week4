@@ -22,9 +22,11 @@ interface TodoDao {
     fun deleteTodo(todo:Todo)
 
     //update cara 1
-    @Query("UPDATE todo SET title=:title, notes=:notes, priority=:priority WHERE uuid = :id")
+    @Query("UPDATE todo SET title=:title, notes=:notes, priority=:priority, is_done=:isDone WHERE uuid = :id")
+    fun update(title:String, notes:String, priority:Int, isDone:Int, id:Int)
 
-    fun update(title:String, notes:String, priority:Int, id:Int)
+    @Query("UPDATE todo SET is_done=1 WHERE uuid = :id")
+    fun setStatus(id:Int)
 
     //cara kedua
     @Update
