@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -21,7 +22,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
 
-class StudentDetailFragment : Fragment() {
+class StudentDetailFragment : Fragment(),ButtonUpdateClickListener {
     private lateinit var binding:FragmentStudentDetailBinding
     private lateinit var viewModel: DetailViewModel
 
@@ -38,6 +39,9 @@ class StudentDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.student = Student("","","","",
+            "https://tse3.mm.bing.net/th?id=OIP.wqrzL_ALTlCP_eHZgJkYfwHaJ4&pid=Api&P=0&h=220")
+
         viewModel = ViewModelProvider(this).get(DetailViewModel::class.java)
         var id = ""
         if(arguments != null){
@@ -45,9 +49,17 @@ class StudentDetailFragment : Fragment() {
         }
 
         viewModel.fetch(id)
-        binding.txtID.setText(id)
+        observeViewModel()
+
+    }
+
+    fun observeViewModel(){
         viewModel.studentLD.observe(viewLifecycleOwner,  {
             var student = it
+
+            binding.student = it
+            binding.listener = this
+
             binding.btnUpdate?.setOnClickListener {
                 Observable.timer(5, TimeUnit.SECONDS)
                     .subscribeOn(Schedulers.io())
@@ -59,31 +71,29 @@ class StudentDetailFragment : Fragment() {
                             R.drawable.baseline_person_2_24)
                     }
             }
-
-            binding.txtName.setText(it.name)
-            binding.txtBod.setText(it.dob)
-            binding.txtPhone.setText(it.phone)
-            val picasso = Picasso.Builder(requireContext())
-            picasso.listener { picasso, uri, exception ->
-                exception.printStackTrace()
-            }
-
-            picasso.build().load(it.photoUrl)
-                .into(binding.imageView, object: Callback {
-                    override fun onSuccess() {
-                        binding.progressBar2.visibility = View.INVISIBLE
-                        binding.imageView.visibility = View.VISIBLE
-                    }
-                    override fun onError(e: Exception?) {
-                        Log.e("picasso_error", e.toString())
-                    }
-                })
-
+           // binding.txtID.setText(id)
+//            binding.txtName.setText(it.name)
+//            binding.txtBod.setText(it.dob)
+//            binding.txtPhone.setText(it.phone)
+//            val picasso = Picasso.Builder(requireContext())
+//            picasso.listener { picasso, uri, exception ->
+//                exception.printStackTrace()
+//            }
+//
+//            picasso.build().load(it.photoUrl)
+//                .into(binding.imageView, object: Callback {
+//                    override fun onSuccess() {
+//                        binding.progressBar2.visibility = View.INVISIBLE
+//                        binding.imageView.visibility = View.VISIBLE
+//                    }
+//                    override fun onError(e: Exception?) {
+//                        Log.e("picasso_error", e.toString())
+//                    }
+//                })
         })
-
-
-
     }
 
-
+     override fun onButtonUpdateClick(v: View) {
+        Toast.makeText(context,"Successfully Updated",Toast.LENGTH_SHORT).show()
+    }
 }
